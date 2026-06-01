@@ -13,6 +13,7 @@
 # See precipice/LICENSE for full license.
 #
 
+# This shell script is part of the build toolchain. It must be called from */precipice/
 # This utility pastes the right Clang compiler (architecture) to a variable, and can be source in other scripts.
 
 # verify calling directory
