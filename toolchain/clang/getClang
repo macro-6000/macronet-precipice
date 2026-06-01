@@ -1,0 +1,53 @@
+#!/usr/bin/sh
+
+#
+# Copyright (C) 2026, Marko Acres and the Precipice Contributors.
+# This file is part of the Precipice Operating System project.
+# Licensed strictly under the terms of the GNU General Public License 
+# Version 2 ONLY, as specified in the LICENSE file at the root of this 
+# repository.
+#
+# You do NOT have permission to upgrade, modify, or redistribute this 
+# code under any other version of the GPL (such as v3.x or beyond).
+#
+# See precipice/LICENSE for full license.
+#
+
+# This utility pastes the right Clang compiler (architecture) to a variable, and can be source in other scripts.
+
+# verify calling directory
+if [ "$(basename "$PWD")" != "precipice" ]
+then
+	echo "Precipice compilation toolchain scripts must be called from the precipice root! Quitting."
+	exit 1
+fi
+
+# the first step is to check if the manual arch specification has been used. if so, set it.
+# if it hasnt, we set it to the system architecture using uname.
+if [ -f ".cfg-specify-arch" ]
+then
+	arch=$(cat ".cfg-specify-arch")
+else
+	arch=$(uname -m)
+fi
+
+# arch path variable
+archCfg="toolchain/clang/arch/$arch"
+
+# check if there is a matching arch file, to see if it's supported.
+# if not, error and quit.
+if [ ! -f "$archCfg" ]
+then
+	echo "Precipice Compilation toolchain does not support arch $arch"
+	echo "Quitting."
+	exit 1
+fi
+
+# next, we get the triplet and flags.
+{
+	read -r targetTriplet
+	read -r archFlags
+} < "$archCfg"
+
+# finally, we put it in a variable (the finished command). any script can source and get this.
+clangCompile="clang -target $targetTriplet $archFlags --sysroot=stage -I stage/include"
