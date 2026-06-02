@@ -7,6 +7,11 @@ musl/*
 # Compiled linux
 linux/*
 
+# Ignore all build dirs
+stage/*
+rootfs/*
+initrd/*
+
 # ALWAYS keep .gitkeep
 !**/.gitkeep
 
